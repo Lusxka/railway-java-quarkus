@@ -2,6 +2,7 @@ package org.acme.app.security;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import java.util.Optional;
 
 @ApplicationScoped
 public class ApiKeyService {
@@ -10,18 +11,23 @@ public class ApiKeyService {
     String validApiKey;
 
     public boolean isValid(String apiKey) {
-        return apiKey != null && apiKey.equals(validApiKey);
+        if (apiKey == null || validApiKey == null) {
+            return false;
+        }
+        return apiKey.equals(validApiKey);
     }
 
     public String getUsernameFromApiKey(String apiKey) {
-        // In a real application, you might want to decode the API key
-        // or look up user information from a database
-        return "api-user";
+        if (isValid(apiKey)) {
+            return "api-user";
+        }
+        return null;
     }
 
     public String[] getRolesFromApiKey(String apiKey) {
-        // In a real application, you might want to retrieve roles
-        // based on the API key from a database
-        return new String[]{"user"};
+        if (isValid(apiKey)) {
+            return new String[]{"user"};
+        }
+        return new String[]{};
     }
 }

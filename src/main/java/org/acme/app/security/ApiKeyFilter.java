@@ -1,6 +1,5 @@
 package org.acme.app.security;
 
-import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -16,7 +15,7 @@ public class ApiKeyFilter implements ContainerRequestFilter {
     @Inject
     ApiKeyService apiKeyService;
 
-    @ConfigProperty(name = "quarkus.api-key.header-name")
+    @ConfigProperty(name = "quarkus.api-key.header-name", defaultValue = "X-API-Key")
     String apiKeyHeader;
 
     @Override
@@ -41,8 +40,7 @@ public class ApiKeyFilter implements ContainerRequestFilter {
 
     private boolean isPublicPath(String path) {
         return path.startsWith("/public/") ||
-               path.equals("/health") ||
-               path.equals("/metrics") ||
+               path.startsWith("/q/") ||  // Quarkus dev console and health endpoints
                path.equals("/swagger") ||
                path.equals("/openapi");
     }
